@@ -34,7 +34,7 @@ const LifeCounter1 = (): JSX.Element => {
   return (
     <Paper
       sx={{
-        backgroundColor: "#00FF00",
+        backgroundColor: "#1b5e85",
         justifyContent: "center",
         alignItems: "center",
         display: "flex",
