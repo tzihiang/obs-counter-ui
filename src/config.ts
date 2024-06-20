@@ -1,2 +1,0 @@
-export const LOCALHOST_SERVER = "192.168.1.100";
-export const LOCALHOST_API_SERVER_PORT = "5000";
