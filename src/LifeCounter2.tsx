@@ -42,18 +42,30 @@ const LifeCounter1 = (): JSX.Element => {
       }}
     >
       <Grid container>
-        <Grid item xs={3} display="flex" justifyContent="space-around">
-          <IconButton onClick={handleIncrement} size="large">
-            <AddIcon />
-          </IconButton>
+        <Grid
+          item
+          xs={3}
+          display="flex"
+          justifyContent="space-around"
+          alignItems="center"
+          onClick={handleIncrement}
+        >
+          <Typography variant="h2" onClick={handleIncrement}>
+            +
+          </Typography>
         </Grid>
         <Grid item xs={6} display="flex" justifyContent="center">
-          <Typography variant="h4">{life2}</Typography>
+          <Typography variant="h1">{life2}</Typography>
         </Grid>
-        <Grid item xs={3} display="flex" justifyContent="space-around">
-          <IconButton onClick={handleDecrement} size="large">
-            <RemoveIcon />
-          </IconButton>
+        <Grid
+          item
+          xs={3}
+          display="flex"
+          justifyContent="space-around"
+          alignItems="center"
+          onClick={handleDecrement}
+        >
+          <Typography variant="h2">-</Typography>
         </Grid>
       </Grid>
     </Paper>
