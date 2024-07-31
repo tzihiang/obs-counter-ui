@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Paper, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useCallback } from "react";
 import _ from 'lodash';
-import { LOCALHOST_SERVER, LOCALHOST_API_SERVER_PORT } from "../config";
+import { LOCALHOST_SERVER, LOCALHOST_API_SERVER_PORT } from "../../config";
 
 
 interface LifeCounterProps {
