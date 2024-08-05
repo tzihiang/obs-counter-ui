@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import LifeCounter from "./Components/LifeCounter";
+import LifeCounter from "./components/LifeCounter";
 
 const queryClient = new QueryClient();
 

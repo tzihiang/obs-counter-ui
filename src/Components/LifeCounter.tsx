@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { Paper, Grid, Typography } from "@mui/material";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import _ from 'lodash';
-import { LOCALHOST_SERVER, LOCALHOST_API_SERVER_PORT } from "../../config";
+import { LOCALHOST_SERVER, LOCALHOST_API_SERVER_PORT } from "../config";
 
 
 interface LifeCounterProps {
@@ -15,16 +15,20 @@ const LifeCounter = (props: LifeCounterProps): JSX.Element => {
   const [life, setLife] = useState(0);
   const { id, color } = props;
 
-  const fetchLifeValue = async () => {
-    try {
-      const response = await axios.get(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`);
-      setLife(response.data.value);
-    } catch (error) {
-      console.error('Error fetching life value:', error);
-    }
-  };
+  useEffect(() => {
+    const fetchLifeValue = async () => {
+      try {
+        const response = await axios.get(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`);
+        setLife(response.data.value);
+      } catch (error) {
+        console.error('Error fetching life value:', error);
+      }
+    };
 
-  const debouncedSetLifeValue = useCallback(
+    fetchLifeValue();
+  }, [id]);
+
+  const debouncedSetLifeValue = useMemo(() =>
     _.debounce(async (value: number) => {
       try {
         await axios.post(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`, { value });
@@ -44,8 +48,10 @@ const LifeCounter = (props: LifeCounterProps): JSX.Element => {
   };
 
   useEffect(() => {
-    fetchLifeValue();
-  }, [id]);
+    return () => {
+      debouncedSetLifeValue.cancel();
+    };
+  }, [debouncedSetLifeValue]);
 
   useEffect(() => {
     debouncedSetLifeValue(life);
