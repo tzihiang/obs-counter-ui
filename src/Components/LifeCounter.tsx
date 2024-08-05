@@ -2,10 +2,10 @@ import axios from 'axios';
 import { Paper, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useCallback } from "react";
 import _ from 'lodash';
-import { LOCALHOST_SERVER, LOCALHOST_API_SERVER_PORT } from "../../config";
 
 
 interface LifeCounterProps {
+  ipAddress: string;
   id: number;
   color: string;
 }
@@ -13,11 +13,11 @@ interface LifeCounterProps {
 const LifeCounter = (props: LifeCounterProps): JSX.Element => {
 
   const [life, setLife] = useState(0);
-  const { id, color } = props;
+  const { ipAddress, id, color } = props;
 
   const fetchLifeValue = async () => {
     try {
-      const response = await axios.get(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`);
+      const response = await axios.get(`http://${ipAddress}:5000/life/${id}`);
       setLife(response.data.value);
     } catch (error) {
       console.error('Error fetching life value:', error);
@@ -27,7 +27,7 @@ const LifeCounter = (props: LifeCounterProps): JSX.Element => {
   const debouncedSetLifeValue = useCallback(
     _.debounce(async (value: number) => {
       try {
-        await axios.post(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`, { value });
+        await axios.post(`http://${ipAddress}:5000/life/${id}`, { value });
       } catch (error) {
         console.error('Error updating life value:', error);
       }
