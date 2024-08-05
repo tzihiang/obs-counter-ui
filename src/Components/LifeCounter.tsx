@@ -2,8 +2,6 @@ import axios from 'axios';
 import { Paper, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useMemo } from "react";
 import _ from 'lodash';
-import { LOCALHOST_SERVER, LOCALHOST_API_SERVER_PORT } from "../config";
-
 
 interface LifeCounterProps {
   id: number;
@@ -11,32 +9,54 @@ interface LifeCounterProps {
 }
 
 const LifeCounter = (props: LifeCounterProps): JSX.Element => {
-
   const [life, setLife] = useState(0);
+  const [ip, setIp] = useState<string>("");
   const { id, color } = props;
 
   useEffect(() => {
-    const fetchLifeValue = async () => {
+    const fetchIpAddress = async () => {
       try {
-        const response = await axios.get(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`);
-        setLife(response.data.value);
+        const response = await fetch('http://localhost:5000/ip');
+        const data = await response.json();
+        setIp(data.ip);
+        return data.ip;
+      } catch (error) {
+        console.error('Error fetching IP:', error);
+        throw error;
+      }
+    };
+
+    const fetchLifeValue = async (ipAddress: string) => {
+      try {
+        const response = await fetch(`http://${ipAddress}:5000/life/${id}`);
+        const data = await response.json()
+        setLife(data.value);
       } catch (error) {
         console.error('Error fetching life value:', error);
       }
     };
 
-    fetchLifeValue();
+    const initialize = async () => {
+      try {
+        const ipAddress = await fetchIpAddress();
+        await fetchLifeValue(ipAddress);
+      } catch (error) {
+        console.error('Initialization error:', error);
+      }
+    };
+
+    initialize();
   }, [id]);
 
   const debouncedSetLifeValue = useMemo(() =>
     _.debounce(async (value: number) => {
       try {
-        await axios.post(`http://${LOCALHOST_SERVER}:${LOCALHOST_API_SERVER_PORT}/life/${id}`, { value });
+        await axios.post(`http://${ip}:5000/life/${id}`, { value });
       } catch (error) {
         console.error('Error updating life value:', error);
       }
     }, 300),
-    [id]
+    [id, ip]
   );
 
   const incrementHandler = () => {
@@ -54,8 +74,10 @@ const LifeCounter = (props: LifeCounterProps): JSX.Element => {
   }, [debouncedSetLifeValue]);
 
   useEffect(() => {
-    debouncedSetLifeValue(life);
-  }, [life, debouncedSetLifeValue]);
+    if (ip) {
+      debouncedSetLifeValue(life);
+    }
+  }, [life, debouncedSetLifeValue, ip]);
 
   return (
     <Paper
