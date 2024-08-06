@@ -6,10 +6,10 @@ const LifeCounter1 = (): JSX.Element => {
         <Container>
             <Grid container sx={{ height: "300px" }}>
                 <Grid item xs={6} >
-                    <LifeCounter color="#FF0000" id={1} />
+                    <LifeCounter color="#43B0BA" id={1} />
                 </Grid>
                 <Grid item xs={6}>
-                    <LifeCounter color="#0000FF" id={2} />
+                    <LifeCounter color="#A56F49" id={2} />
                 </Grid>
             </Grid>
         </Container>
