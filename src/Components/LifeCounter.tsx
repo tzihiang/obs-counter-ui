@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Paper, Grid, Typography } from "@mui/material";
 import { useEffect, useState, useMemo } from "react";
-import { LOCAL_NETWORK_ADDRESS, LOCAL_SERVER_PORT } from "../config";
 import _ from "lodash";
 
 interface LifeCounterProps {
@@ -12,13 +11,29 @@ interface LifeCounterProps {
 const LifeCounter = (props: LifeCounterProps): JSX.Element => {
   const [life, setLife] = useState(0);
   const { id, color } = props;
+  const [ipAddress, setIpAddress] = useState('');
+
+  // Fetch the IP address from the public file
+  useEffect(() => {
+    const fetchIpAddress = async () => {
+      try {
+        const response = await fetch('/ip_address.txt');
+        const data = await response.text();
+        setIpAddress(data.trim());
+      } catch (error) {
+        console.error("Error fetching IP address:", error);
+      }
+    };
+
+    fetchIpAddress();
+  }, []);
 
   useEffect(() => {
     const fetchLifeValue = async () => {
+      if (!ipAddress) return; // Ensure IP address is available
+
       try {
-        const response = await fetch(
-          `http://${LOCAL_NETWORK_ADDRESS}:${LOCAL_SERVER_PORT}/life/${id}`
-        );
+        const response = await fetch(`http://${ipAddress}:5000/life/${id}`);
         const data = await response.json();
         setLife(data.value);
       } catch (error) {
@@ -27,20 +42,22 @@ const LifeCounter = (props: LifeCounterProps): JSX.Element => {
     };
 
     fetchLifeValue();
-  }, [id]);
+  }, [id, ipAddress]); // Depend on ipAddress here
 
   const debouncedSetLifeValue = useMemo(
     () =>
       _.debounce(async (value: number) => {
+        if (!ipAddress) return; // Ensure IP address is available
+
         try {
-          await axios.post(`http://${LOCAL_NETWORK_ADDRESS}:5000/life/${id}`, {
+          await axios.post(`http://${ipAddress}:5000/life/${id}`, {
             value,
           });
         } catch (error) {
           console.error("Error updating life value:", error);
         }
       }, 300),
-    [id]
+    [id, ipAddress] // Depend on ipAddress here
   );
 
   const incrementHandler = () => {
